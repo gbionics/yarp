@@ -274,6 +274,11 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (finder.check("skip"))
+    {
+        enabled.assign(partsName.size(), true);
+    }
+
     for(int i = 0; i < partsName.size(); i++)
     {
         if(enabled.at(i))

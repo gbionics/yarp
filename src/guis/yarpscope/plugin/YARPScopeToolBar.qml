@@ -4,7 +4,7 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick.Controls 2.15
 
 Rectangle {
 
@@ -15,7 +15,7 @@ Rectangle {
 
     Connections{
         target: spinBox1
-        onEditingFinished:{
+        onValueModified:{
             changeInterval(spinBox1.value)
         }
     }
@@ -44,13 +44,14 @@ Rectangle {
     }
 
     SpinBox {
+        editable: true
         id: spinBox1
         x: 14
         y: 19
         width: 65
         height: 24
-        minimumValue: 5
-        maximumValue: 1000
+        from: 5
+        to: 1000
 
     }
 
@@ -72,7 +73,7 @@ Rectangle {
         height: 35
         checkable: true
         checked: true
-        iconSource: playPauseBtn.checked == true ? "qrc:/YARPScope/images/pause.png" : "qrc:/YARPScope/images/play.png"
+        icon.source: playPauseBtn.checked == true ? "qrc:/YARPScope/images/pause.png" : "qrc:/YARPScope/images/play.png"
         onClicked: {
             playPressed(playPauseBtn.checked)
         }
@@ -84,7 +85,7 @@ Rectangle {
         y: 8
         width: 68
         height: 35
-        iconSource: "qrc:/YARPScope/images/action-clear.png"
+        icon.source: "qrc:/YARPScope/images/action-clear.png"
         onClicked: {
             clear()
         }
@@ -96,7 +97,7 @@ Rectangle {
         y: 8
         width: 68
         height: 35
-        iconSource: "qrc:/YARPScope/images/action-rescale.png"
+        icon.source: "qrc:/YARPScope/images/action-rescale.png"
         onClicked: {
             rescale()
         }

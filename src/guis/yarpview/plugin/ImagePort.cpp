@@ -9,11 +9,14 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "ImagePort.h"
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QVideoFrameFormat>
+#endif
 #include <yarp/sig/ImageFile.h>
 
 using namespace yarp::os;
 
-#include <sstream>
+#include <cstring>
 
 InputCallback::InputCallback()
 {
@@ -33,44 +36,32 @@ void InputCallback::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgba> &img)
 #endif
 {
 
-    uchar *tmpBuf;
-    QSize s = (QSize(img.width(),img.height()));
-    int imgSize = img.getRawImageSize();
-
-    // Allocate a QVideoFrame
-    QVideoFrame frame(imgSize, s, img.getRowSize(), QVideoFrame::Format_RGB32);
-
-    // Maps the buffer
-    frame.map(QAbstractVideoBuffer::WriteOnly);
-    // Takes the ownership of the buffer in write only mode
-    tmpBuf = frame.bits();
-    unsigned char *rawImg = img.getRawImage();
-    //int j = 0;
-    // Inverts the planes because Qt Wants an image in RGB format instead of BGR
-   /* for(int i=0; i<imgSize; i++){
-        tmpBuf[j+2] = rawImg[i];
-        i++;
-        tmpBuf[j+1] = rawImg[i];
-        i++;
-        tmpBuf[j] = rawImg[i];
-        tmpBuf[j+3] = 0;
-        j+=4;
-    }*/
-
-    if (1)
-    {
-        memcpy(tmpBuf, rawImg, imgSize);
+    const QSize size(img.width(), img.height());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef YARP_LITTLE_ENDIAN
+    const auto format = QVideoFrameFormat::Format_BGRX8888;
+#else
+    const auto format = QVideoFrameFormat::Format_RGBX8888;
+#endif
+    QVideoFrame frame(QVideoFrameFormat(size, format));
+    if (!frame.map(QVideoFrame::WriteOnly)) {
+        return;
     }
-    else
-    {   //flip the image along the y axis
-        for(int x = 0; x < s.height(); x++) {
-            memcpy(tmpBuf + x * img.getRowSize(),
-                   rawImg + (s.height() - x - 1) * img.getRowSize(),
-                   img.getRowSize());
-        }
+    auto *destination = frame.bits(0);
+    const int stride = frame.bytesPerLine(0);
+#else
+    QVideoFrame frame(img.getRawImageSize(), size, img.getRowSize(), QVideoFrame::Format_RGB32);
+    if (!frame.map(QAbstractVideoBuffer::WriteOnly)) {
+        return;
     }
-
-    //unmap the buffer
+    auto *destination = frame.bits();
+    const int stride = frame.bytesPerLine();
+#endif
+    // Qt and YARP may pad rows differently, particularly at odd image widths.
+    for (std::size_t row = 0; row < img.height(); ++row) {
+        memcpy(destination + row * stride, img.getRawImage() + row * img.getRowSize(),
+               img.width() * 4);
+    }
     frame.unmap();
     if(sigHandler){
         sigHandler->sendVideoFrame(frame);

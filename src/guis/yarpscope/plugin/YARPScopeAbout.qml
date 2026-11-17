@@ -4,7 +4,7 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick.Controls 2.15
 import QtQuick.Window 2.1
 
 Window {
@@ -182,7 +182,7 @@ Window {
             id: rect
             anchors.fill: parent
 
-            TabView{
+            Frame{
                 id: tab
                 parent: rect
                 anchors.top: parent.top
@@ -194,9 +194,6 @@ Window {
                 anchors.rightMargin: 10
                 anchors.bottomMargin: 10
 
-                Component.onCompleted: {
-                    //addTab("Written By", Qt.createComponent("qrc:/YARPView/Credits.qml"))
-                }
             }
 
 

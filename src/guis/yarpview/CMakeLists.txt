@@ -3,11 +3,14 @@
 
 if(YARP_COMPILE_yarpview)
 
-  include(YarpUseQt5)
+  include(YarpUseQt)
 
   set(QtYARPViewPlugin_QMLDIR "robotology/yarp/view")
 
   add_subdirectory(plugin)
   add_subdirectory(src)
+  if(YARP_COMPILE_TESTS)
+    add_subdirectory(tests)
+  endif()
 
 endif()

@@ -36,7 +36,7 @@ ApplicationItem::ApplicationItem(Application* application, Manager *manager,  QL
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     textWidth = fontMetric.horizontalAdvance(itemName);
 #else
-    textWidth = fontMetric.width(itemName);
+    textWidth = fontMetric.horizontalAdvance(itemName);
 #endif
     usedModulesId = usedIds;
 }
@@ -70,7 +70,7 @@ void ApplicationItem::init()
 
 
     QFontMetrics fontMetric(font);
-    //int textWidth = fontMetric.width(itemName);
+    //int textWidth = fontMetric.horizontalAdvance(itemName);
 
 
     /*********************************************************/

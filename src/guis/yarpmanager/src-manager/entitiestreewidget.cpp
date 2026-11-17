@@ -7,6 +7,7 @@
 #include <yarp/conf/filesystem.h>
 #include <dirent.h>
 #include <QProcess>
+#include <QFile>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QTreeWidgetItem>
@@ -179,8 +180,8 @@ void EntitiesTreeWidget::addAppTemplate(yarp::manager::AppTemplate* tmp)
     QTreeWidgetItem *item = new QTreeWidgetItem(templatesNode,QStringList() << QString("%1 (%2)").arg(tmp->name.data()).arg(tmp->tmpFileName.data()));
 
     item->setData(0,Qt::UserRole, yarp::manager::NODE_APPTEMPLATE);
-    item->setData(0,Qt::UserRole + 1 ,tmp->name.data());
-    item->setData(0,Qt::UserRole + 2 ,tmp->tmpFileName.data());
+    item->setData(0,Qt::UserRole + 1, QString::fromStdString(tmp->name));
+    item->setData(0,Qt::UserRole + 2, QString::fromStdString(tmp->tmpFileName));
     item->setIcon(0,QIcon(":/file-xml22.svg"));
 }
 
@@ -323,7 +324,7 @@ void EntitiesTreeWidget::mouseMoveEvent(QMouseEvent *event)
         }
 
         QFontMetrics fontMetric(font());
-        //int textWidth = fontMetric.width(selectedItem->text(0));
+        //int textWidth = fontMetric.horizontalAdvance(selectedItem->text(0));
 
         auto* drag = new QDrag(this);
         drag->setMimeData(mimeData);
@@ -373,7 +374,7 @@ void EntitiesTreeWidget::mousePressEvent(QMouseEvent *event)
 //        }
 
 //        QFontMetrics fontMetric(font());
-//        int textWidth = fontMetric.width(selectedItem->text(0));
+//        int textWidth = fontMetric.horizontalAdvance(selectedItem->text(0));
 
 //        QDrag *drag = new QDrag(this);
 //        drag->setMimeData(mimeData);

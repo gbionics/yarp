@@ -132,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
             // Adding shortcut (to only the first 9 sequences)
             if (keyIndex < 9) {
-                QKeySequence shortcut(Qt::CTRL + Qt::META + (Qt::Key_1 + keyIndex++));
+                QKeySequence shortcut(QStringLiteral("Ctrl+Meta+%1").arg(++keyIndex), QKeySequence::PortableText);
                 newAction->setShortcut(shortcut);
                 newAction->setShortcutContext(Qt::ApplicationShortcut);
             }
@@ -223,7 +223,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
             // Adding shortcut (to only the first 9 sequences)
             if (keyIndex < 9) {
-                QKeySequence shortcut(Qt::CTRL + Qt::ALT + Qt::META + (Qt::Key_1 + keyIndex++));
+                QKeySequence shortcut(QStringLiteral("Ctrl+Alt+Meta+%1").arg(++keyIndex), QKeySequence::PortableText);
                 newAction->setShortcut(shortcut);
                 newAction->setShortcutContext(Qt::ApplicationShortcut);
             }
@@ -319,7 +319,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this,SIGNAL(sig_internalClose()),this,SLOT(close()),Qt::QueuedConnection);
 
     auto* lay = new QHBoxLayout();
-    lay->setMargin(0);
+    lay->setContentsMargins(0, 0, 0, 0);
     lay->setSpacing(0);
     lay->setSizeConstraint(QLayout::SetMaximumSize);
     m_ui->treeWidgetContainer->setLayout(lay);
@@ -743,7 +743,7 @@ bool MainWindow::init(std::vector<std::string> enabledParts,
     }
 
     auto* lay = new QHBoxLayout();
-    lay->setMargin(0);
+    lay->setContentsMargins(0, 0, 0, 0);
     lay->setSpacing(0);
     m_ui->mainContainer->setLayout(lay);
     m_ui->mainContainer->layout()->addWidget(m_tabPanel);

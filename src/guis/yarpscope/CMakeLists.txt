@@ -3,7 +3,7 @@
 
 if(YARP_COMPILE_yarpscope)
 
-  include(YarpUseQt5)
+  include(YarpUseQt)
 
   set(QtYARPScopePlugin_QMLDIR "robotology/yarp/scope")
 

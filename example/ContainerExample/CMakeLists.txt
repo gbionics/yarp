@@ -6,7 +6,9 @@ cmake_minimum_required(VERSION 3.19)
 project(ContainerExample)
 
 
-find_package(Qt5 COMPONENTS Core Widgets Quick Qml REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets Quick Qml)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Quick Qml)
+set(YARP_QT_MAJOR_VERSION ${QT_VERSION_MAJOR})
 
 
 # Instruct CMake to run moc automatically when needed.
@@ -25,7 +27,7 @@ file(GLOB_RECURSE ContainerExample_SRCS *.cpp)
 file(GLOB_RECURSE ContainerExample_HDRS *.h)
 file(GLOB ContainerExample_QRC_FILES *.qrc)
 
-qt5_add_resources(ContainerExample_QRC_GEN_FILES ${ContainerExample_QRC_FILES})
+qt_add_resources(ContainerExample_QRC_GEN_FILES ${ContainerExample_QRC_FILES})
 
 source_group(
   "Resources Files"
@@ -45,9 +47,9 @@ target_sources(ContainerExample
 )
 target_link_libraries(ContainerExample
   PRIVATE
-    Qt5::Widgets
-    Qt5::Qml
-    Qt5::Quick
+    Qt${YARP_QT_MAJOR_VERSION}::Widgets
+    Qt${YARP_QT_MAJOR_VERSION}::Qml
+    Qt${YARP_QT_MAJOR_VERSION}::Quick
 )
 
 
@@ -59,7 +61,7 @@ find_package(YARP)
 
 set(_qml2_import_path "${YARP_INSTALL_PREFIX}/${YARP_QML2_IMPORT_DIR}")
 file(TO_NATIVE_PATH "${_qml2_import_path}" PLUGINS_RELATIVE_PATH)
-message("YARP Qt5 plugins are installed in \n
+message("YARP Qt plugins are installed in \n
     ${_qml2_import_path}\n
 If they are not found automatically, you probably need to add this directory to your\n
     QML2_IMPORT_PATH\n

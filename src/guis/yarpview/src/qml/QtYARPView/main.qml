@@ -4,7 +4,7 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick.Controls 2.15
 import QtQuick.Window 2.1
 
 // Import the YARPView module
@@ -43,7 +43,7 @@ ApplicationWindow {
         id: menu
     }
 
-    statusBar: YARPViewStatusBar{
+    footer: YARPViewStatusBar{
         id: statusBar
     }
 
@@ -59,87 +59,87 @@ ApplicationWindow {
 
     Connections{
         target: vSurface
-        onChangeWindowSize:{
+        function onChangeWindowSize(w, h) {
             window.width = w
             window.height = h
         }
-        onAutosize:{
+        function onAutosize(check) {
             if(menu !== undefined){
                 menu.enableAutosize(check)
             }
         }
-        onSynchRate:{
+        function onSynchRate(check) {
             if(menu !== undefined){
                 menu.enableSynch(check)
             }
         }
-        onSetName:{
+        function onSetName(name) {
             statusBar.setName(name)
         }
-        onSetTitle:{
+        function onSetTitle(inputTitle) {
             window.title=inputTitle
         }
-        onSaveSetClosed:{
+        function onSaveSetClosed(check) {
             menu.saveSetChecked(check);
         }
-        onSaveSingleClosed:{
+        function onSaveSingleClosed(check) {
             menu.saveSingleChecked(check);
         }
-        onRightClickEnabled:{
+        function onRightClickEnabled(enabled) {
             menu.externallyCheckRightClick(enabled);
         }
     }
 
     Connections{
         target: menu
-        onFreeze:{
+        function onFreeze(checked) {
             vSurface.freeze(checked)
         }
-        onSetOriginalSize:{
+        function onSetOriginalSize() {
             calc()
             vSurface.setOriginalSize()
         }
 
-        onSetOriginalAspectRatio:{
+        function onSetOriginalAspectRatio() {
             calc()
             vSurface.setOriginalAspectRatio()
         }
 
-        onChangeRefreshInterval:{
+        function onChangeRefreshInterval() {
             vSurface.changeRefreshInterval()
         }
 
-        onSynchDisplayPeriod:{
+        function onSynchDisplayPeriod(checked) {
             vSurface.synchDisplayPeriod(checked)
         }
 
-        onSynchDisplaySize:{
+        function onSynchDisplaySize(checked) {
             vSurface.synchDisplaySize(checked)
         }
 
-        onSaveSingleImage:{
+        function onSaveSingleImage(checked) {
             vSurface.saveSingleImage(checked)
         }
 
-        onSaveSetImages:{
+        function onSaveSetImages(checked) {
             vSurface.saveSetImages(checked)
 
         }
 
-        onPickColor:{
+        function onPickColor(checked) {
             vSurface.enableColorPicking(checked);
             statusBar.setPixelValVisibility(checked);
         }
 
-        onRightClickEnable:{
+        function onRightClickEnable(checked) {
             vSurface.enableRightClick(checked);
         }
 
-        onAbout:{
+        function onAbout() {
             vSurface.about()
         }
 
-        onQuit:{
+        function onQuit() {
             Qt.quit()
         }
     }
@@ -147,7 +147,7 @@ ApplicationWindow {
     Connections{
         target: statusBar
 
-        onHeightChanged:{
+        function onHeightChanged() {
             calc();
             vSurface.setOriginalAspectRatio()
         }

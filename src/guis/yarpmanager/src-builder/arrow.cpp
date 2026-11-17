@@ -120,7 +120,7 @@ void Arrow::setConnection(const Connection& conn)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     textWidth = fontMetric.horizontalAdvance(label);
 #else
-    textWidth = fontMetric.width(label);
+    textWidth = fontMetric.horizontalAdvance(label);
 #endif
 
     GraphicModel mod = connection.getModelBase();
@@ -712,8 +712,8 @@ Label::Label(QString label, QGraphicsItem *parent) : QGraphicsTextItem(label,par
     auto* combo = new QComboBox();
     combo->setEditable(true);
     parentArrow = (Arrow*)parent;
-    QObject::connect(combo,SIGNAL(activated(QString)),
-                     sigHandler,SLOT(onConnectionComboChanged(QString)));
+    QObject::connect(combo, &QComboBox::textActivated,
+                     sigHandler, &ItemSignalHandler::onConnectionComboChanged);
 
     combo->addItem("fast_tcp");
     combo->addItem("tcp");

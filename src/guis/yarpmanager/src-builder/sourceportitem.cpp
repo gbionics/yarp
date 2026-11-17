@@ -30,7 +30,7 @@ SourcePortItem::SourcePortItem(QString itemName, bool isInApp,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     int textWidth = fontMetric.horizontalAdvance(itemName);
 #else
-    int textWidth = fontMetric.width(itemName);
+    int textWidth = fontMetric.horizontalAdvance(itemName);
 #endif
 
     prepareGeometryChange();
@@ -166,7 +166,7 @@ void SourcePortItem::editingFinished()
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     int textWidth = fontMetric.horizontalAdvance(itemName);
 #else
-    int textWidth = fontMetric.width(itemName);
+    int textWidth = fontMetric.horizontalAdvance(itemName);
 #endif
 
     prepareGeometryChange();

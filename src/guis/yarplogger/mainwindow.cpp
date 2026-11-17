@@ -11,6 +11,7 @@
 #include <QString>
 #include <QMenu>
 #include <QTextStream>
+#include <QRegularExpression>
 #include <ctime>
 #include <yarp/logger/YarpLogger.h>
 #include <QAbstractItemModel>
@@ -385,11 +386,12 @@ void MainWindow::on_filterLineEdit_textChanged(const QString &text)
     QString filter = "*";
     filter.append(text);
     filter.append("*");
-    QRegExp regExp(filter, Qt::CaseInsensitive, QRegExp::Wildcard);
+    QRegularExpression regExp(QRegularExpression::wildcardToRegularExpression(filter),
+                              QRegularExpression::CaseInsensitiveOption);
 
     auto* logtab = ui->logtabs->currentWidget()->findChild<LogTab*>("logtab");
     if (logtab) {
-        logtab->proxyModelSearch->setFilterRegExp(regExp);
+        logtab->proxyModelSearch->setFilterRegularExpression(regExp);
     }
 #endif
 }
@@ -515,13 +517,12 @@ QString MainWindow::recomputeFilters()
 void MainWindow::apply_button_filters()
 {
 #if USE_FILTERS
-    QRegExp regExp ("*", Qt::CaseInsensitive, QRegExp::RegExp);
-    regExp.setPattern(recomputeFilters());
+    QRegularExpression regExp(recomputeFilters(), QRegularExpression::CaseInsensitiveOption);
     for (int i=0; i<ui->logtabs->count(); i++)
     {
         auto* logtab = ui->logtabs->widget(i)->findChild<LogTab*>("logtab");
         if (logtab) {
-            logtab->proxyModelButtons->setFilterRegExp(regExp);
+            logtab->proxyModelButtons->setFilterRegularExpression(regExp);
             logtab->proxyModelButtons->setFilterKeyColumn(LogModel::LOGLEVEL_COLUMN);
         }
     }

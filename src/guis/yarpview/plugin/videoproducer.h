@@ -8,36 +8,51 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QPointer>
+#include <QVideoFrame>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QVideoSink>
+#else
 #include <QAbstractVideoSurface>
 #include <QVideoSurfaceFormat>
+#endif
 
-/*! \class VideoProducer
-    \brief The videoproducer class
-
-    This class has a QAbstractVideoSurface where the video frame is rendered and used by the QML VideoOutput
-*/
+/*! Presents incoming YARP frames to the QML VideoOutput. */
 class VideoProducer : public QObject
 {
     Q_OBJECT
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    Q_PROPERTY(QVideoSink *videoSink READ videoSink WRITE setVideoSink)
+#else
     Q_PROPERTY(QAbstractVideoSurface *videoSurface READ videoSurface WRITE setVideoSurface)
-    Q_PROPERTY(int frameWidth READ getWidth)
-    Q_PROPERTY(int frameHeight READ getHeight)
+#endif
+    Q_PROPERTY(int frameWidth READ getWidth NOTIFY resizeWindowRequest)
+    Q_PROPERTY(int frameHeight READ getHeight NOTIFY resizeWindowRequest)
 
 public:
-    VideoProducer(QObject *parent = 0);
-    ~VideoProducer();
+    VideoProducer(QObject *parent = nullptr);
+    ~VideoProducer() override;
     QString getPixelAsStr(int x, int y);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QVideoSink *videoSink() const;
+    void setVideoSink(QVideoSink *sink);
+#else
     QAbstractVideoSurface *videoSurface() const;
     void setVideoSurface(QAbstractVideoSurface *surface);
+#endif
 
     int getWidth();
     int getHeight();
 
 private:
-    QAbstractVideoSurface *m_surface;
-    QVideoSurfaceFormat *m_format;
-    QVideoFrame *m_frame;  // Stores the value of the current video frame to allow "color picking"
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QPointer<QVideoSink> m_sink;
+#else
+    QPointer<QAbstractVideoSurface> m_surface;
+    QVideoSurfaceFormat m_format;
+#endif
+    QVideoFrame m_frame;
     QMutex mutex;
 
 signals:
@@ -45,8 +60,6 @@ signals:
 
 public slots:
     void onNewVideoContentReceived(QVideoFrame *frame);
-
-
 };
 
 #endif // VIDEOPRODUCER_H

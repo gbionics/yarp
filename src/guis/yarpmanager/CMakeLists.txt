@@ -3,7 +3,7 @@
 
 if(YARP_COMPILE_yarpmanager)
 
-  include(YarpUseQt5)
+  include(YarpUseQt)
   include(YarpMacOSUtilities)
 
   add_executable(yarpmanager WIN32)
@@ -122,8 +122,8 @@ if(YARP_COMPILE_yarpmanager)
 
 
   # Generated files
-  qt5_add_resources(yarpmanager_QRC_GEN_SRCS ${yarpmanager_QRC_FILES})
-  qt5_wrap_ui(yarpmanager_UI_GEN_SRCS ${yarpmanager_UI_FILES})
+  yarp_qt_add_resources(yarpmanager_QRC_GEN_SRCS ${yarpmanager_QRC_FILES})
+  yarp_qt_wrap_ui(yarpmanager_UI_GEN_SRCS ${yarpmanager_UI_FILES})
 
   source_group(
     TREE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -184,8 +184,8 @@ if(YARP_COMPILE_yarpmanager)
       YARP::YARP_init
       YARP::YARP_manager
       YARP::YARP_profiler
-      Qt5::Widgets
-      Qt5::Gui
+      Qt${YARP_QT_MAJOR_VERSION}::Widgets
+      Qt${YARP_QT_MAJOR_VERSION}::Gui
   )
 
   install(TARGETS yarpmanager COMPONENT utilities DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -4,7 +4,7 @@
 # QCustomPlot
 project(YARP_priv_qcustomplot)
 
-include(YarpUseQt5)
+include(YarpUseQt)
 
 add_library(YARP_priv_qcustomplot STATIC)
 
@@ -20,7 +20,7 @@ target_sources(YARP_priv_qcustomplot PRIVATE ${qcustomplot_SRCS})
 
 target_include_directories(YARP_priv_qcustomplot PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/qcustomplot>)
 
-target_link_libraries(YARP_priv_qcustomplot PUBLIC Qt5::Widgets)
+target_link_libraries(YARP_priv_qcustomplot PUBLIC Qt${YARP_QT_MAJOR_VERSION}::Widgets)
 
 set_property(TARGET YARP_priv_qcustomplot PROPERTY FOLDER "Libraries/External")
 

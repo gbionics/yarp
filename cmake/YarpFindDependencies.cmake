@@ -305,19 +305,49 @@ buildandset_dependency(hmac)
 find_package(Eigen3 QUIET)
 checkandset_dependency(Eigen3)
 
-set(Qt5_REQUIRED_VERSION 5.4)
-find_package(Qt5 ${Qt5_REQUIRED_VERSION} COMPONENTS Core Widgets Gui Quick Qml Multimedia Xml PrintSupport OPTIONAL_COMPONENTS DBus QUIET)
-checkandset_dependency(Qt5)
+set(YARP_QT_VERSION "" CACHE STRING "Qt major version to use (5 or 6; empty prefers Qt 5)")
+set_property(CACHE YARP_QT_VERSION PROPERTY STRINGS "" 5 6)
+if(NOT YARP_QT_VERSION MATCHES "^([56])?$")
+  message(FATAL_ERROR "YARP_QT_VERSION must be 5, 6, or empty")
+endif()
+
+set(Qt5_REQUIRED_VERSION 5.15)
+set(Qt6_REQUIRED_VERSION 6.5)
+set(YARP_HAS_Qt FALSE)
+set(YARP_HAS_Qt5 FALSE)
+set(YARP_HAS_Qt6 FALSE)
+if(NOT YARP_QT_VERSION OR YARP_QT_VERSION STREQUAL "5")
+  find_package(Qt5 ${Qt5_REQUIRED_VERSION} COMPONENTS Core Widgets Gui Quick Qml Multimedia Xml PrintSupport OPTIONAL_COMPONENTS DBus QUIET)
+  checkandset_dependency(Qt5)
+endif()
+if(NOT YARP_HAS_Qt5 AND (NOT YARP_QT_VERSION OR YARP_QT_VERSION STREQUAL "6"))
+  find_package(Qt6 ${Qt6_REQUIRED_VERSION} COMPONENTS Core Widgets Gui Quick Qml Multimedia Xml PrintSupport OPTIONAL_COMPONENTS DBus QUIET)
+  checkandset_dependency(Qt6)
+endif()
+if(YARP_HAS_Qt5)
+  set(YARP_QT_MAJOR_VERSION 5)
+  set(YARP_HAS_Qt TRUE)
+elseif(YARP_HAS_Qt6)
+  set(YARP_QT_MAJOR_VERSION 6)
+  set(YARP_HAS_Qt TRUE)
+endif()
+if(YARP_QT_VERSION AND NOT YARP_HAS_Qt)
+  message(FATAL_ERROR "Requested Qt ${YARP_QT_VERSION} was not found with all required modules (including Quick and Multimedia)")
+endif()
+if(YARP_HAS_Qt)
+  set(YARP_HAS_QtDBus ${Qt${YARP_QT_MAJOR_VERSION}DBus_FOUND})
+  message(STATUS "Using Qt ${YARP_QT_MAJOR_VERSION}")
+endif()
 
 find_package(QCustomPlot QUIET)
-checkbuildandset_dependency(QCustomPlot Qt5)
+checkbuildandset_dependency(QCustomPlot Qt)
 
 find_package(Graphviz QUIET)
 checkandset_dependency(Graphviz)
 
 set(YARP_CUSTOM_REASON_QGVCore "customized version")
 find_package(QGVCore QUIET)
-checkbuildandset_dependency(QGVCore Qt5 Graphviz)
+checkbuildandset_dependency(QGVCore Qt Graphviz)
 
 set(SWIG_REQUIRED_VERSION 4)
 find_package(SWIG ${SWIG_REQUIRED_VERSION} QUIET)
@@ -508,7 +538,7 @@ yarp_dependent_option(
 
 yarp_dependent_option(
   YARP_COMPILE_GUIS "Do you want to compile GUIs" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_HAS_Qt" OFF
 )
 yarp_renamed_option(CREATE_GUIS YARP_COMPILE_GUIS) # Deprecated since YARP 3.2
 
@@ -534,39 +564,39 @@ yarp_dependent_option(
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpview "Do you want to compile yarpview?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpmanager "Do you want to compile yarpmanager?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5;YARP_HAS_TinyXML" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt;YARP_HAS_TinyXML" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarplogger "Do you want to create yarplogger?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpscope "Do you want to create yarpscope?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5;YARP_HAS_TinyXML;YARP_HAS_QCustomPlot" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt;YARP_HAS_TinyXML;YARP_HAS_QCustomPlot" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpdataplayer "Do you want to compile yarpdataplayer?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpmotorgui "Do you want to compile yarpmotorgui?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpbatterygui "Do you want to compile yarpbatterygui?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpaudiocontrolgui "Do you want to compile yarpaudiocontrolgui?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpmobilebasegui "Do you want to compile yarpmobilebasegui?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarplaserscannergui  "Do you want to compile yarplaserscannergui?" ON
@@ -578,7 +608,7 @@ yarp_dependent_option(
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpviz "Do you want to compile yarpviz?" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5;YARP_HAS_Graphviz;YARP_HAS_QGVCore" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt;YARP_HAS_Graphviz;YARP_HAS_QGVCore" OFF
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpconnectionsinfo "Do you want to compile yarpconnectionsinfo?" ON
@@ -594,7 +624,7 @@ yarp_dependent_option(
 )
 yarp_dependent_option(
   YARP_COMPILE_yarpllmgui "Do you want to compile yarpllmgui" ON
-  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt5" OFF
+  "YARP_COMPILE_EXECUTABLES;YARP_COMPILE_GUIS;YARP_HAS_Qt" OFF
 )
 
 ################################################################################
@@ -647,6 +677,7 @@ print_dependency(TinyXML)
 print_dependency(xmlrpcpp)
 print_dependency(hmac)
 print_dependency(Qt5)
+print_dependency(Qt6)
 print_dependency(QCustomPlot)
 print_dependency(Graphviz)
 print_dependency(QGVCore)

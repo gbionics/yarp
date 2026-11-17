@@ -1,0 +1,121 @@
+# SPDX-FileCopyrightText: Generative Bionics S.R.L.
+# SPDX-License-Identifier: BSD-3-Clause
+
+[workspace]
+name = "yarp"
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64", "win-64"]
+
+[dependencies]
+c-compiler = "*"
+cxx-compiler = "*"
+ccache = "*"
+cmake = ">=3.29"
+ninja = "*"
+pkg-config = "*"
+python = ">=3.10"
+ycm-cmake-modules = ">=0.15.1"
+ace = ">=6"
+eigen = "*"
+ffmpeg = "<9"
+libopencv = ">=4"
+sqlite = "*"
+tinyxml = ">=2.6"
+zlib = "*"
+
+[feature.qt5.dependencies]
+qt-main = ">=5.15,<6"
+
+[feature.qt5.activation.env]
+YARP_QT_VERSION = "5"
+
+[feature.qt6.dependencies]
+qt6-main = ">=6.5,<7"
+qt6-multimedia = ">=6.5,<7"
+
+[feature.qt6.activation.env]
+YARP_QT_VERSION = "6"
+
+[environments]
+default = { features = ["qt5"], solve-group = "qt5" }
+qt5 = { features = ["qt5"], solve-group = "qt5" }
+qt6 = { features = ["qt6"], solve-group = "qt6" }
+
+[target.linux.dependencies]
+binutils = "*"
+mold = "*"
+
+[activation.env]
+YARP_LINKER_TYPE = "DEFAULT"
+
+[target.linux.activation.env]
+YARP_LINKER_TYPE = "MOLD"
+
+[tasks.configure]
+description = "Configure YARP with tests enabled"
+cmd = [
+    "cmake", "-S", ".", "-B", "build/pixi-$PIXI_ENVIRONMENT_NAME", "-G", "Ninja",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_LINKER_TYPE=$YARP_LINKER_TYPE",
+    "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
+    "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
+    "-DYARP_COMPILE_TESTS=ON",
+    "-DYARP_COMPILE_GUIS=ON",
+    "-DYARP_QT_VERSION=$YARP_QT_VERSION",
+    "-DYARP_COMPILE_libYARP_math=ON",
+    "-DYARP_COMPILE_ALL_FAKE_DEVICES=ON",
+    # Skip discovery of optional packages not provided by this environment.
+    # YARP_USE_<Package>=OFF alone does not skip find_package().
+    "-DCMAKE_DISABLE_FIND_PACKAGE_rerun_sdk=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_RobotTestingFramework=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_Graphviz=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_QGVCore=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_SWIG=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_Lua=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_Libdc1394=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_MPI=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_FTDI=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_SDL=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_PortAudio=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_ZFP=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_OpenNI2=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_PCL=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_Doxygen=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_SOXR=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_BISON=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_FLEX=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_I2C=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_Libv4l2=ON",
+    "-DCMAKE_DISABLE_FIND_PACKAGE_Libv4lconvert=ON",
+]
+
+[tasks.build]
+description = "Build YARP and its tests"
+cmd = ["cmake", "--build", "build/pixi-$PIXI_ENVIRONMENT_NAME"]
+depends-on = ["configure"]
+
+[tasks.test]
+description = "Build and run the YARP tests"
+cmd = ["ctest", "--test-dir", "build/pixi-$PIXI_ENVIRONMENT_NAME", "--output-on-failure"]
+depends-on = ["build"]
+
+[tasks.build-gui-demos]
+description = "Build the two demo GUIs and their fake-device dependencies"
+cmd = [
+    "cmake", "--build", "build/pixi-$PIXI_ENVIRONMENT_NAME", "--target",
+    "yarpmotorgui", "yarpview", "QtYARPViewPlugin", "yarp", "yarpserver", "yarpdev",
+    "yarp_fakeMotionControl", "yarp_fakeFrameGrabber", "yarp_deviceBundler",
+    "yarp_remote_controlboard",
+    "yarp_controlBoard_nws_yarp", "yarp_frameGrabber_nws_yarp",
+]
+depends-on = ["configure"]
+
+[tasks.demo-yarpmotorgui]
+description = "Open yarpmotorgui with a six-joint fake control board"
+cmd = "python scripts/pixi-gui-demo.py yarpmotorgui"
+depends-on = ["build-gui-demos"]
+
+[tasks.demo-yarpview]
+description = "Open yarpview with a fake camera's moving test image"
+cmd = "python scripts/pixi-gui-demo.py yarpview"
+depends-on = ["build-gui-demos"]

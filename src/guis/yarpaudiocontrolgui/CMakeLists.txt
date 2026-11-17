@@ -3,7 +3,7 @@
 
 if(YARP_COMPILE_yarpaudiocontrolgui)
 
-  include(YarpUseQt5)
+  include(YarpUseQt)
   include(YarpMacOSUtilities)
 
   add_executable(yarpaudiocontrolgui WIN32)
@@ -34,8 +34,8 @@ if(YARP_COMPILE_yarpaudiocontrolgui)
       YARP::YARP_init
       YARP::YARP_sig
       YARP::YARP_dev
-      Qt5::Widgets
-      Qt5::Gui
+      Qt${YARP_QT_MAJOR_VERSION}::Widgets
+      Qt${YARP_QT_MAJOR_VERSION}::Gui
   )
 
   install(

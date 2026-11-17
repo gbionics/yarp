@@ -5,9 +5,7 @@
 
 import robotology.yarp.view 1.0
 import QtQuick 2.2
-import QtMultimedia 5.0
-import QtQuick.Dialogs 1.1
-import QtQuick.Controls 1.1
+import QtQuick.Controls 2.15
 import QtQuick.Window 2.1
 
 
@@ -39,7 +37,7 @@ Rectangle {
     /*********Connections*********/
     Connections{
         target: yarpViewCore
-        onSendPortFps:{
+        function onSendPortFps(avg, min, max) {
             if(dataArea != undefined){
                 dataArea.avgFps = avg
                 dataArea.minFps = min
@@ -48,7 +46,7 @@ Rectangle {
                 dataArea.portSizeY = yarpViewCore.videoProducer.frameHeight
             }
         }
-        onSendDisplayFps:{
+        function onSendDisplayFps(avg, min, max) {
             if(dataArea != undefined){
                 dataArea.displayAvgFps = avg
                 dataArea.displayMinFps = min
@@ -58,37 +56,37 @@ Rectangle {
             }
         }
 
-        onOptionsSet:{
+        function onOptionsSet() {
             maincontainer.synchronizeRightEnabled();
         }
 
-        onSynchRate:{
+        function onSynchRate(check) {
             synchRate(check);
         }
 
-        onAutosize:{
+        function onAutosize(check) {
             autosize(check);
         }
 
-        onSetName:{
+        function onSetName(name) {
             setName(name);
         }
 
-        onSetTitle:{
+        function onSetTitle(inputTitle) {
             if(inputTitle.length > 0) {
                 setTitle(inputTitle);
             }
         }
 
-        onWidthChanged:{
+        function onWidthChanged() {
             //console.log("onWidthChanged")
         }
 
-        onHeightChanged:{
+        function onHeightChanged() {
             //console.log("onHeightChanged")
         }
 
-        onSizeChanged:{
+        function onSizeChanged() {
             //console.log("onSizeChanged")
             setOriginalSize()
         }
@@ -96,11 +94,11 @@ Rectangle {
 
     Connections{
         target: setIntervalDlg
-        onOk:{
+        function onOk(value) {
             yarpViewCore.changeRefreshInterval(value)
             setIntervalDlg.visible = false
         }
-        onCancel:{
+        function onCancel() {
             setIntervalDlg.visible = false
         }
     }
@@ -108,11 +106,11 @@ Rectangle {
     Connections{
         target: saveSingleImageDlg
 
-        onSetFileName:{
+        function onSetFileName(fileName) {
             yarpViewCore.setFileName(fileName)
         }
 
-        onSaveFrame:{
+        function onSaveFrame() {
             yarpViewCore.saveFrame()
         }
     }
@@ -120,15 +118,15 @@ Rectangle {
     Connections{
         target: saveSetImageDlg
 
-        onSaveFrameSet:{
+        function onSaveFrameSet() {
             yarpViewCore.startDumpFrames()
         }
 
-        onStopSavingFrameSet:{
+        function onStopSavingFrameSet() {
             yarpViewCore.stopDumpFrames()
         }
 
-        onSetFileName: {
+        function onSetFileName(fileName) {
             yarpViewCore.setFilesName(fileName)
         }
     }
@@ -244,11 +242,10 @@ Rectangle {
         id: yarpViewCore
     }
 
-    VideoOutput{
+    YARPVideoOutput{
         anchors.fill: parent
         id: mainVideoOutput
-        source: yarpViewCore.videoProducer
-        fillMode: VideoOutput.Stretch
+        videoProducer: yarpViewCore.videoProducer
 
         MouseArea{
             anchors.fill: parent
@@ -421,7 +418,7 @@ Rectangle {
         Button {
             id: recordSetBtn
             text: qsTr("Record")
-            iconSource: "qrc:/YARPView/record.svg"
+            icon.source: "qrc:/YARPView/record.svg"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 5
             anchors.top: parent.top
@@ -436,7 +433,7 @@ Rectangle {
         Button {
             id: stopSetBtn
             text: qsTr("Stop")
-            iconSource: "qrc:/YARPView/stop.svg"
+            icon.source: "qrc:/YARPView/stop.svg"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 5
             anchors.top: parent.top
@@ -465,7 +462,7 @@ Rectangle {
             }
         }
 
-        FileDialog{
+        YARPFileDialog{
             id: saveSetFileDlg
             selectExisting: false
             title: "File Set Name"
@@ -507,7 +504,7 @@ Rectangle {
         Button {
             id: button1
             text: qsTr("Save")
-            iconSource: "qrc:/YARPView/stop.svg"
+            icon.source: "qrc:/YARPView/stop.svg"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 5
             anchors.top: parent.top
@@ -533,7 +530,7 @@ Rectangle {
             }
         }
 
-        FileDialog{
+        YARPFileDialog{
             id: saveFileDlg
             selectExisting: false
             title: "File Name"
@@ -573,18 +570,19 @@ Rectangle {
         }
 
         SpinBox {
+        editable: true
             id: spinBox1
             x: 300
             y: 26
             width: 92
             height: 26
             value: yarpViewCore.refreshInterval
-            maximumValue: 1000
-            minimumValue: 10
+            to: 1000
+            from: 10
             focus: true
             Connections{
                 target: spinBox1
-                onEditingFinished:{
+                function onValueModified() {
                     setIntervalDlg.confirm(spinBox1.value)
                 }
             }

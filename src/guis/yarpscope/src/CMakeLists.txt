@@ -19,7 +19,7 @@ set(yarpscope_QML_FILES
   qml/QtYARPScope/main.qml
 )
 
-qt5_add_resources(yarpscope_QRC_GEN_SRCS ${yarpscope_QRC_FILES})
+yarp_qt_add_resources(yarpscope_QRC_GEN_SRCS ${yarpscope_QRC_FILES})
 
 source_group(
   TREE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -57,9 +57,9 @@ target_sources(yarpscope
 
 target_link_libraries(yarpscope
   PRIVATE
-    Qt5::Widgets
-    Qt5::Qml
-    Qt5::Quick
+    Qt${YARP_QT_MAJOR_VERSION}::Widgets
+    Qt${YARP_QT_MAJOR_VERSION}::Qml
+    Qt${YARP_QT_MAJOR_VERSION}::Quick
 )
 
 target_include_directories(yarpscope PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/qtquick2applicationviewer)
@@ -83,9 +83,9 @@ if(APPLE AND NOT YARP_DISABLE_MACOS_BUNDLES)
   add_custom_command(
     TARGET yarpscope.app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:QtYARPScopePlugin>"
-                                     "$<TARGET_FILE_DIR:yarpscope.app>/../lib/qt5/qml/${QtYARPScopePlugin_QMLDIR}/$<TARGET_FILE_NAME:QtYARPScopePlugin>"
+                                     "$<TARGET_FILE_DIR:yarpscope.app>/../lib/qt${YARP_QT_MAJOR_VERSION}/qml/${QtYARPScopePlugin_QMLDIR}/$<TARGET_FILE_NAME:QtYARPScopePlugin>"
     COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:QtYARPScopePlugin>/qmldir"
-                                     "$<TARGET_FILE_DIR:yarpscope.app>/../lib/qt5/qml/${QtYARPScopePlugin_QMLDIR}/qmldir"
+                                     "$<TARGET_FILE_DIR:yarpscope.app>/../lib/qt${YARP_QT_MAJOR_VERSION}/qml/${QtYARPScopePlugin_QMLDIR}/qmldir"
   )
 endif()
 
