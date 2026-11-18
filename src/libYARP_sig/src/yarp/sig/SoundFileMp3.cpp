@@ -115,7 +115,28 @@ bool decode(AVCodecContext* dec_ctx, AVPacket* pkt, AVFrame* frame, Sound& sound
 
 int check_sample_fmt(const AVCodec * codec, enum AVSampleFormat sample_fmt)
 {
-    const enum AVSampleFormat* p = codec->sample_fmts;
+    const enum AVSampleFormat* p = nullptr;
+
+#if LIBAVCODEC_VERSION_MAJOR >= 62
+    const void* supported_configs = nullptr;
+    int ret = avcodec_get_supported_config(nullptr,
+                                           codec,
+                                           AV_CODEC_CONFIG_SAMPLE_FORMAT,
+                                           0,
+                                           &supported_configs,
+                                           nullptr);
+    if (ret < 0) {
+        yCError(SOUNDFILE_MP3, "Could not query the sample formats supported by the selected codec");
+        return ret;
+    }
+    p = static_cast<const enum AVSampleFormat*>(supported_configs);
+#else
+    p = codec->sample_fmts;
+#endif
+
+    if (!p) {
+        return 1;
+    }
 
     while (*p != AV_SAMPLE_FMT_NONE)
     {
@@ -127,16 +148,33 @@ int check_sample_fmt(const AVCodec * codec, enum AVSampleFormat sample_fmt)
     return 0;
 }
 
-int select_sample_rate(const AVCodec * codec)
+int select_sample_rate(const AVCodec* codec, int* sample_rate)
 {
-    const int* p;
+    const int* p = nullptr;
     int best_samplerate = 0;
 
-    if (!codec->supported_samplerates) {
-        return 44100;
+#if LIBAVCODEC_VERSION_MAJOR >= 62
+    const void* supported_configs = nullptr;
+    int ret = avcodec_get_supported_config(nullptr,
+                                           codec,
+                                           AV_CODEC_CONFIG_SAMPLE_RATE,
+                                           0,
+                                           &supported_configs,
+                                           nullptr);
+    if (ret < 0) {
+        yCError(SOUNDFILE_MP3, "Could not query the sample rates supported by the selected codec");
+        return ret;
+    }
+    p = static_cast<const int*>(supported_configs);
+#else
+    p = codec->supported_samplerates;
+#endif
+
+    if (!p) {
+        *sample_rate = 44100;
+        return 0;
     }
 
-    p = codec->supported_samplerates;
     while (*p)
     {
         if (!best_samplerate || abs(44100 - *p) < abs(44100 - best_samplerate)) {
@@ -144,7 +182,8 @@ int select_sample_rate(const AVCodec * codec)
         }
          p++;
     }
-    return best_samplerate;
+    *sample_rate = best_samplerate;
+    return 0;
 }
 
 bool encode(AVCodecContext* ctx, AVFrame* frame, AVPacket* pkt, std::fstream& os)
@@ -184,16 +223,32 @@ bool encode(AVCodecContext* ctx, AVFrame* frame, AVPacket* pkt, std::fstream& os
 /* select layout with the highest channel count */
 static int select_channel_layout(const AVCodec *codec, AVChannelLayout *dst)
 {
-    const AVChannelLayout *p, *best_ch_layout=nullptr;
+    const AVChannelLayout *p = nullptr;
+    const AVChannelLayout *best_ch_layout = nullptr;
     int best_nb_channels   = 0;
 
-    if (!codec->ch_layouts)
+#if LIBAVCODEC_VERSION_MAJOR >= 62
+    const void* supported_configs = nullptr;
+    int ret = avcodec_get_supported_config(nullptr,
+                                           codec,
+                                           AV_CODEC_CONFIG_CHANNEL_LAYOUT,
+                                           0,
+                                           &supported_configs,
+                                           nullptr);
+    if (ret < 0) {
+        return ret;
+    }
+    p = static_cast<const AVChannelLayout*>(supported_configs);
+#else
+    p = codec->ch_layouts;
+#endif
+
+    if (!p)
     {
         AVChannelLayout layout_stereo = AV_CHANNEL_LAYOUT_STEREO;
         return av_channel_layout_copy(dst, &layout_stereo);
     }
 
-    p = codec->ch_layouts;
     while (p->nb_channels)
     {
         int nb_channels = p->nb_channels;
@@ -284,7 +339,12 @@ bool yarp::sig::file::write_mp3_file(const Sound& sound_data, const char* filena
 
     // check that the encoder supports s16 pcm input
     c->sample_fmt = AV_SAMPLE_FMT_S16;
-    if (!check_sample_fmt(codec, c->sample_fmt))
+    ret = check_sample_fmt(codec, c->sample_fmt);
+    if (ret < 0)
+    {
+        return false;
+    }
+    if (ret == 0)
     {
         yCError(SOUNDFILE_MP3, "Encoder does not support sample format %s",
         av_get_sample_fmt_name(c->sample_fmt));
@@ -292,7 +352,11 @@ bool yarp::sig::file::write_mp3_file(const Sound& sound_data, const char* filena
     }
 
     // select other audio parameters supported by the encoder
-    c->sample_rate = select_sample_rate(codec);
+    ret = select_sample_rate(codec, &c->sample_rate);
+    if (ret < 0)
+    {
+        return false;
+    }
 #if LIBAVCODEC_VERSION_MAJOR >= 61
     // from https://github.com/FFmpeg/FFmpeg/commit/f5ef91e02080316f50d606f5b0b03333bb627ed7#diff-85abeaf18e8c74a972fa1f5ab3c2fdfa7ddc818f9048196c6bd5f63a837b076aL167
     ret = select_channel_layout(codec, &c->ch_layout);
