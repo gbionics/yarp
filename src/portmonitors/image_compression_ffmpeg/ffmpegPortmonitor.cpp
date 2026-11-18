@@ -95,16 +95,29 @@ bool FfmpegMonitorObject::create(const yarp::os::Property& options)
         return false;
     }
 
-    if (!codec->pix_fmts)
-    {
-        yCWarning(FFMPEGMONITOR, "The specified codec (%s) has unknown available pixel formats. There might be visualization issues.", codec->name);
+    const AVPixelFormat* supportedPixelFormats = nullptr;
+#if LIBAVCODEC_VERSION_MAJOR >= 62
+    const void* supportedConfigs = nullptr;
+    if (avcodec_get_supported_config(nullptr,
+                                     codec,
+                                     AV_CODEC_CONFIG_PIX_FORMAT,
+                                     0,
+                                     &supportedConfigs,
+                                     nullptr) < 0) {
+        yCError(FFMPEGMONITOR, "Could not query the pixel formats supported by codec %s.", codec->name);
+        return false;
     }
-    else
+    supportedPixelFormats = static_cast<const AVPixelFormat*>(supportedConfigs);
+#else
+    supportedPixelFormats = codec->pix_fmts;
+#endif
+
+    if (supportedPixelFormats)
     {
         std::stringstream pixelFormatList;
         bool found = false;
         size_t i = 0;
-        AVPixelFormat test = codec->pix_fmts[i];
+        AVPixelFormat test = supportedPixelFormats[i];
 
         if (test == AV_PIX_FMT_NONE)
         {
@@ -121,7 +134,7 @@ bool FfmpegMonitorObject::create(const yarp::os::Property& options)
                 break;
             }
             ++i;
-            test = codec->pix_fmts[i];
+            test = supportedPixelFormats[i];
 
             if (test != AV_PIX_FMT_NONE)
             {
@@ -131,7 +144,7 @@ bool FfmpegMonitorObject::create(const yarp::os::Property& options)
 
         if (!found)
         {
-            AVPixelFormat suggestedFormat = avcodec_default_get_format(codecContext, codec->pix_fmts);
+            AVPixelFormat suggestedFormat = avcodec_default_get_format(codecContext, supportedPixelFormats);
 
             if (pixelFormat == FFMPEGPORTMONITOR_DEFAULT_PIXEL_FORMAT)
             {
