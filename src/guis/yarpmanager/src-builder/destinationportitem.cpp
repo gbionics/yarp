@@ -26,11 +26,7 @@ DestinationPortItem::DestinationPortItem(QString itemName, bool isInApp,
     this->app = app;
 
     QFontMetrics fontMetric(font);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     int textWidth = fontMetric.horizontalAdvance(itemName);
-#else
-    int textWidth = fontMetric.horizontalAdvance(itemName);
-#endif
 
     prepareGeometryChange();
     mainRect = QRectF(-((2*PORT_TEXT_WIDTH) + textWidth)/2,-16,(2*PORT_TEXT_WIDTH) + textWidth,32);
@@ -159,11 +155,7 @@ void DestinationPortItem::editingFinished()
     lineEditWidget->setVisible(false);
 
     QFontMetrics fontMetric(font);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     int textWidth = fontMetric.horizontalAdvance(itemName);
-#else
-    int textWidth = fontMetric.horizontalAdvance(itemName);
-#endif
 
     prepareGeometryChange();
     mainRect = QRectF(-((2*PORT_TEXT_WIDTH) + textWidth)/2,-15,(2*PORT_TEXT_WIDTH) + textWidth,30);

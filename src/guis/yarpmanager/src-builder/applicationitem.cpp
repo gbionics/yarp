@@ -33,11 +33,7 @@ ApplicationItem::ApplicationItem(Application* application, Manager *manager,  QL
     customFont.setPointSize(font.pointSize() + 5);
     customFont.setBold(true);
     QFontMetrics fontMetric(customFont);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     textWidth = fontMetric.horizontalAdvance(itemName);
-#else
-    textWidth = fontMetric.horizontalAdvance(itemName);
-#endif
     usedModulesId = usedIds;
 }
 
