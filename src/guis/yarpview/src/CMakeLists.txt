@@ -20,7 +20,7 @@ set(yarpview_QML_FILES
   qml/QtYARPView/mainCompact.qml
 )
 
-qt5_add_resources(yarpview_QRC_GEN_SRCS ${yarpview_QRC_FILES})
+yarp_qt_add_resources(yarpview_QRC_GEN_SRCS ${yarpview_QRC_FILES})
 
 source_group(
   TREE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -56,9 +56,9 @@ target_sources(yarpview
 target_include_directories(yarpview PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/qtquick2applicationviewer)
 
 target_link_libraries(yarpview
-  Qt5::Widgets
-  Qt5::Qml
-  Qt5::Quick
+  Qt${YARP_QT_MAJOR_VERSION}::Widgets
+  Qt${YARP_QT_MAJOR_VERSION}::Qml
+  Qt${YARP_QT_MAJOR_VERSION}::Quick
 )
 
 install(
@@ -81,9 +81,9 @@ if(APPLE AND NOT YARP_DISABLE_MACOS_BUNDLES)
   add_custom_command(
     TARGET yarpview.app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:QtYARPViewPlugin>"
-                                     "$<TARGET_FILE_DIR:yarpview.app>/../lib/qt5/qml/${QtYARPViewPlugin_QMLDIR}/$<TARGET_FILE_NAME:QtYARPViewPlugin>"
+                                     "$<TARGET_FILE_DIR:yarpview.app>/../lib/qt${YARP_QT_MAJOR_VERSION}/qml/${QtYARPViewPlugin_QMLDIR}/$<TARGET_FILE_NAME:QtYARPViewPlugin>"
     COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:QtYARPViewPlugin>/qmldir"
-                                     "$<TARGET_FILE_DIR:yarpview.app>/../lib/qt5/qml/${QtYARPViewPlugin_QMLDIR}/qmldir"
+                                     "$<TARGET_FILE_DIR:yarpview.app>/../lib/qt${YARP_QT_MAJOR_VERSION}/qml/${QtYARPViewPlugin_QMLDIR}/qmldir"
   )
 endif()
 

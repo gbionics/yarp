@@ -20,6 +20,7 @@ set(QtYARPViewPlugin_HDRS
 
 set(QtYARPViewPlugin_QRC_FILES
   res.qrc
+  compat-qt${YARP_QT_MAJOR_VERSION}.qrc
 )
 
 set(QtYARPViewPlugin_QML_FILES
@@ -28,7 +29,7 @@ set(QtYARPViewPlugin_QML_FILES
   YARPViewStatusBar.qml
 )
 
-qt5_add_resources(QtYARPViewPlugin_QRC_GEN_SRCS ${QtYARPViewPlugin_QRC_FILES})
+yarp_qt_add_resources(QtYARPViewPlugin_QRC_GEN_SRCS ${QtYARPViewPlugin_QRC_FILES})
 
 source_group(
   TREE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -69,10 +70,10 @@ target_link_libraries(QtYARPViewPlugin
     YARP::YARP_os
     YARP::YARP_init
     YARP::YARP_sig
-    Qt5::Widgets
-    Qt5::Qml
-    Qt5::Quick
-    Qt5::Multimedia
+    Qt${YARP_QT_MAJOR_VERSION}::Widgets
+    Qt${YARP_QT_MAJOR_VERSION}::Qml
+    Qt${YARP_QT_MAJOR_VERSION}::Quick
+    Qt${YARP_QT_MAJOR_VERSION}::Multimedia
 )
 
 qtyarp_qml_plugin(QtYARPViewPlugin "${QtYARPViewPlugin_QMLDIR}")

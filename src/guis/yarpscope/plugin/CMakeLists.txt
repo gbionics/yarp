@@ -35,7 +35,7 @@ set(QtYARPScopePlugin_QML_FILES
   YARPScopeToolBar.qml
 )
 
-qt5_add_resources(QtYARPScopePlugin_QRC_GEN_SRCS ${QtYARPScopePlugin_QRC_FILES})
+yarp_qt_add_resources(QtYARPScopePlugin_QRC_GEN_SRCS ${QtYARPScopePlugin_QRC_FILES})
 
 source_group(
   TREE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -76,11 +76,11 @@ target_link_libraries(QtYARPScopePlugin
     YARP::YARP_os
     YARP::YARP_init
     ${QCustomPlot_LIBRARIES}
-    Qt5::Widgets
-    Qt5::Qml
-    Qt5::Quick
-    Qt5::Xml
-    Qt5::PrintSupport
+    Qt${YARP_QT_MAJOR_VERSION}::Widgets
+    Qt${YARP_QT_MAJOR_VERSION}::Qml
+    Qt${YARP_QT_MAJOR_VERSION}::Quick
+    Qt${YARP_QT_MAJOR_VERSION}::Xml
+    Qt${YARP_QT_MAJOR_VERSION}::PrintSupport
 )
 
 qtyarp_qml_plugin(QtYARPScopePlugin "${QtYARPScopePlugin_QMLDIR}")

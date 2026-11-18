@@ -3,7 +3,7 @@
 
 if(YARP_COMPILE_yarpdataplayer)
 
-  include(YarpUseQt5)
+  include(YarpUseQt)
   include(YarpMacOSUtilities)
 
   add_executable(yarpdataplayer WIN32)
@@ -45,8 +45,8 @@ if(YARP_COMPILE_yarpdataplayer)
     set(yarpdataplayer_RC_FILES src/RC/yarpdataplayer_resource.rc)
   endif()
 
-  qt5_add_resources(yarpdataplayer_QRC_GEN_SRCS ${yarpdataplayer_QRC_FILES})
-  qt5_wrap_ui(yarpdataplayer_UI_GEN_SRCS ${yarpdataplayer_UI_FILES})
+  yarp_qt_add_resources(yarpdataplayer_QRC_GEN_SRCS ${yarpdataplayer_QRC_FILES})
+  yarp_qt_wrap_ui(yarpdataplayer_UI_GEN_SRCS ${yarpdataplayer_UI_FILES})
 
   include(YarpChooseIDL)
   yarp_choose_idl(yarpdataplayer_THRIFT ${yarpdataplayer_THRIFT_FILES})
@@ -109,7 +109,7 @@ if(YARP_COMPILE_yarpdataplayer)
       YARP::YARP_init
       YARP::YARP_sig
       YARP::YARP_dataplayer
-      Qt5::Widgets
+      Qt${YARP_QT_MAJOR_VERSION}::Widgets
   )
 
   if(YARP_HAS_OpenCV)

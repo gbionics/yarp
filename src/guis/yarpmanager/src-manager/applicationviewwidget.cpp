@@ -118,7 +118,7 @@ ApplicationViewWidget::ApplicationViewWidget(yarp::manager::Application *app,
     }
 
 
-    l->setMargin(0);
+    l->setContentsMargins(0, 0, 0, 0);
 
 
     builderWindowContainer = new QMainWindow(nullptr,Qt::Widget);

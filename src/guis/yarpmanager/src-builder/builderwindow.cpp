@@ -83,7 +83,7 @@ void BuilderWindow::init()
     }
 
 
-    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
     view->centerOn(0,0);
     setLayout(layout);
 

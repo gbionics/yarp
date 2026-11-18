@@ -4,6 +4,7 @@
  */
 
 #include "signalhandler.h"
+#include "videoframeutils.h"
 #include <QUrl>
 #include <QCoreApplication>
 #include <QFileInfo>
@@ -29,8 +30,8 @@ SignalHandler::SignalHandler(QObject *parent) :
 
     timer.setTimerType(Qt::PreciseTimer);
 
-    connect(this,SIGNAL(internalSendFrame(QVideoFrame)),
-            this,SLOT(internalReceiveFrame(QVideoFrame)),Qt::QueuedConnection);
+    connect(this, &SignalHandler::internalSendFrame,
+            this, &SignalHandler::internalReceiveFrame, Qt::QueuedConnection);
 
     connect(&timer,SIGNAL(timeout()),this,SLOT(onTimerElapsed()),Qt::QueuedConnection);
 
@@ -46,8 +47,8 @@ SignalHandler::SignalHandler(QObject *parent) :
 
 SignalHandler::~SignalHandler()
 {
-    disconnect(this,SIGNAL(internalSendFrame(QVideoFrame)),
-            this,SLOT(internalReceiveFrame(QVideoFrame)));
+    disconnect(this, &SignalHandler::internalSendFrame,
+               this, &SignalHandler::internalReceiveFrame);
 
     disconnect(&timer,SIGNAL(timeout()),this,SLOT(onTimerElapsed()));
 
@@ -92,16 +93,12 @@ void SignalHandler::sendVideoFrame(QVideoFrame f)
 
     if(b_saveCurrentFrameMode){
         b_saveCurrentFrameMode = false;
-        f.map(QAbstractVideoBuffer::ReadOnly);
-        QImage img = QImage(f.bits(),f.width(),f.height(),QImage::Format_RGB32);
-        f.unmap();
+        QImage img = yarpVideoFrameToImage(f);
         saveFrame(img);
     }
 
     if(b_saveSetFrameMode){
-        f.map(QAbstractVideoBuffer::ReadOnly);
-        QImage img = QImage(f.bits(),f.width(),f.height(),QImage::Format_RGB32);
-        f.unmap();
+        QImage img = yarpVideoFrameToImage(f);
         saveFrameSet(img);
     }
 

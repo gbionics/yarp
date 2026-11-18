@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/YARPView">
+        <file alias="YARPFileDialog.qml">YARPFileDialogQt6.qml</file>
+        <file alias="YARPVideoOutput.qml">YARPVideoOutputQt6.qml</file>
+    </qresource>
+</RCC>

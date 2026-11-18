@@ -4,7 +4,7 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick.Controls 2.15
 import QtQuick.Window 2.1
 
 // Import the YARPView module
@@ -46,21 +46,21 @@ ApplicationWindow {
 
     Connections{
         target: vSurface
-        onChangeWindowSize:{
+        function onChangeWindowSize(w, h) {
             window.width = w
             window.height = h
         }
-        onSynchRate:{
+        function onSynchRate(check) {
             if(menu !== undefined){
                 menu.enableSynch(check)
             }
         }
-        onAutosize:{
+        function onAutosize(check) {
             if(menu !== undefined){
                 menu.enableAutosize(check)
             }
         }
-        onSetTitle:{
+        function onSetTitle(inputTitle) {
             window.title=inputTitle
         }
     }

@@ -34,15 +34,15 @@ PropertiesTable::PropertiesTable(Manager *manager,QWidget *parent) :
     moduleDescription = new QTreeWidget(this);
 
     paramsSignalMapper = new QSignalMapper(this);
-    connect(paramsSignalMapper, SIGNAL(mapped(QWidget*)),
-                this, SLOT(onComboChanged(QWidget*)));
+    connect(paramsSignalMapper, &QSignalMapper::mappedObject, this,
+            [this](QObject *object) { onComboChanged(qobject_cast<QWidget *>(object)); });
 
     appProperties->setHeaderLabels(QStringList() << "Property" << "Value");
     moduleProperties->setHeaderLabels(QStringList() << "Property" << "Value");
     moduleDescription->setHeaderLabels(QStringList() << "Item" << "Value");
     lay->addWidget(propertiesTab);
     setLayout(lay);
-    lay->setMargin(0);
+    lay->setContentsMargins(0, 0, 0, 0);
 
     propertiesTab->addTab(appProperties,"Application Properties");
 }
@@ -172,11 +172,11 @@ void PropertiesTable::showModuleTab(ModuleItem *mod)
     }
     connect(nodeCombo, SIGNAL(editTextChanged(QString)), paramsSignalMapper, SLOT(map()));
     connect(nodeCombo, SIGNAL(currentIndexChanged(int)), paramsSignalMapper, SLOT(map()));
-    paramsSignalMapper->setMapping(nodeCombo,nodeCombo);
+    paramsSignalMapper->setMapping(nodeCombo, static_cast<QObject *>(nodeCombo));
 
     connect(deployerCombo, SIGNAL(editTextChanged(QString)), paramsSignalMapper, SLOT(map()));
     connect(deployerCombo, SIGNAL(currentIndexChanged(int)), paramsSignalMapper, SLOT(map()));
-    paramsSignalMapper->setMapping(deployerCombo,deployerCombo);
+    paramsSignalMapper->setMapping(deployerCombo, static_cast<QObject *>(deployerCombo));
 
 
 
@@ -195,7 +195,7 @@ void PropertiesTable::showModuleTab(ModuleItem *mod)
          moduleProperties->setItemWidget(it,1,paramCombo);
          connect(paramCombo, SIGNAL(editTextChanged(QString)), paramsSignalMapper, SLOT(map()));
          connect(paramCombo, SIGNAL(currentIndexChanged(int)), paramsSignalMapper, SLOT(map()));
-         paramsSignalMapper->setMapping(paramCombo,paramCombo);
+         paramsSignalMapper->setMapping(paramCombo, static_cast<QObject *>(paramCombo));
      }
      /*****************************/
 

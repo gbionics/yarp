@@ -4,10 +4,10 @@
  */
 
 import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.0
 
-StatusBar {
+ToolBar {
     id: bar
     height: 20*(3+pixelValPresent)
     property string avgFps: "0.0"
@@ -98,8 +98,8 @@ StatusBar {
             Item{
                 id: pixelValSpacer
                 Layout.fillWidth: true
-                Layout.minimumWidth: pixelValLabel
-                Layout.maximumWidth: pixelValLabel
+                Layout.minimumWidth: pixelValLabel.width
+                Layout.maximumWidth: pixelValLabel.width
             }
         }
 

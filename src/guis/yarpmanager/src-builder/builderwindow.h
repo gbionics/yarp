@@ -13,7 +13,6 @@
 #include <QGraphicsItem>
 #include <QMenu>
 #include "commons.h"
-#include <QtOpenGL/QGLWidget>
 #include <QDebug>
 #include "builderitem.h"
 #include "sourceportitem.h"

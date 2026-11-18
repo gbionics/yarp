@@ -10,7 +10,12 @@ if(NOT DEFINED CMAKE_INSTALL_QMLDIR)
   # "LIBRARY" and not "RUNTIME" (ON WINDOWS DLLs are usually "RUNTIME"
   # when created by "add_library(SHARED)"). Therefore it would normally
   # end in "lib" in all the cases.
-  set(CMAKE_INSTALL_QMLDIR "${CMAKE_INSTALL_LIBDIR}/qt5/qml" CACHE PATH "qml plugins (lib/qt5/qml)")
+  set(_yarp_qt_qml_version ${YARP_QT_MAJOR_VERSION})
+  if(NOT _yarp_qt_qml_version)
+    set(_yarp_qt_qml_version 5)
+  endif()
+  set(CMAKE_INSTALL_QMLDIR "${CMAKE_INSTALL_LIBDIR}/qt${_yarp_qt_qml_version}/qml" CACHE PATH "qml plugins (lib/qt${_yarp_qt_qml_version}/qml)")
+  unset(_yarp_qt_qml_version)
 endif()
 mark_as_advanced(CMAKE_INSTALL_QMLDIR)
 if(NOT IS_ABSOLUTE ${CMAKE_INSTALL_QMLDIR})

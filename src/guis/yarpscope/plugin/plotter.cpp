@@ -39,8 +39,12 @@ Plotter::Plotter(const QString &title, int gridx, int gridy, int hspan, int vspa
     start(0),
     interact(false)
 {
-    connect(customPlot.axisRect(),SIGNAL(zoomRequest()),this,SLOT(onInteract()));
-    connect(customPlot.axisRect(),SIGNAL(dragStarted()),this,SLOT(onInteract()));
+    connect(&customPlot, &QCustomPlot::mouseWheel, this, &Plotter::onInteract);
+    connect(&customPlot, &QCustomPlot::mouseMove, this, [this](QMouseEvent *event) {
+        if (event->buttons().testFlag(Qt::LeftButton)) {
+            onInteract();
+        }
+    });
 
     customPlot.axisRect()->setBackground(QBrush(QColor(bgcolor)));
     customPlot.axisRect()->setupFullAxesBox(true);

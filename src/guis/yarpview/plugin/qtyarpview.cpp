@@ -4,6 +4,7 @@
  */
 
 #include "qtyarpview.h"
+#include <QFile>
 #include <QThread>
 using namespace yarp::os;
 
@@ -15,8 +16,8 @@ QtYARPView::QtYARPView(QQuickItem *parent):
     _pOutPort = nullptr;
     _pOutRightPort = nullptr;
 
-    connect(&sigHandler,SIGNAL(sendFrame(QVideoFrame*)),&videoProducer,
-            SLOT(onNewVideoContentReceived(QVideoFrame*)),Qt::DirectConnection);
+    connect(&sigHandler, &SignalHandler::sendFrame, &videoProducer,
+            &VideoProducer::onNewVideoContentReceived, Qt::DirectConnection);
 
     connect(&sigHandler,SIGNAL(sendFps(double,double,double,double,double,double)),
             this, SLOT(onSendFps(double,double,double,double,double,double)));

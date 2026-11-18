@@ -1409,7 +1409,7 @@ void PartItem::onOpenSequence()
         reader.readNext();
 
         if(reader.isStartElement()){
-            if(reader.name().contains("Sequence_")){ //Sequence_
+            if(reader.name().contains(QStringLiteral("Sequence_"))){ //Sequence_
                 QXmlStreamAttributes attributes = reader.attributes();
                 referencePart = attributes.value("ReferencePart").toString();
             }

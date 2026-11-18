@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 if(YARP_COMPILE_yarpllmgui)
-  include(YarpUseQt5)
+  include(YarpUseQt)
   include(YarpMacOSUtilities)
 
   add_executable(yarpllmgui WIN32)
@@ -27,7 +27,7 @@ if(YARP_COMPILE_yarpllmgui)
     ConfigurePopup.qml
   )
 
-  qt5_add_resources(yarpllmgui_QRC_GEN_SRCS ${yarpllmgui_QRC_FILES})
+  yarp_qt_add_resources(yarpllmgui_QRC_GEN_SRCS ${yarpllmgui_QRC_FILES})
   qtyarp_use_qml_plugin()
 
   source_group(
@@ -66,10 +66,10 @@ if(YARP_COMPILE_yarpllmgui)
     YARP::YARP_os
     YARP::YARP_init
     YARP::YARP_dev
-    Qt5::Widgets
-    Qt5::Gui
-    Qt5::Qml
-    Qt5::Quick
+    Qt${YARP_QT_MAJOR_VERSION}::Widgets
+    Qt${YARP_QT_MAJOR_VERSION}::Gui
+    Qt${YARP_QT_MAJOR_VERSION}::Qml
+    Qt${YARP_QT_MAJOR_VERSION}::Quick
   )
 
   install(TARGETS yarpllmgui DESTINATION ${CMAKE_INSTALL_BINDIR})
